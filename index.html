@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ProMate – Tenant Requirement Form</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:       #0d0d0d;
+    --surface:  #141414;
+    --surface2: #1a1a1a;
+    --border:   #2a2a2a;
+    --accent:   #e07b39;
+    --accent2:  #f09050;
+    --text:     #eeebe5;
+    --muted:    #7a7a7a;
+    --input-bg: #111111;
+    --radius:   10px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;min-height:100vh;padding-bottom:80px}
+
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 40px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(13,13,13,.94);backdrop-filter:blur(14px);z-index:100}
+  .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;letter-spacing:-.5px;color:var(--text)}
+  .logo span{color:var(--accent)}
+  .nav-badge{background:var(--surface2);border:1px solid var(--border);border-radius:50px;padding:6px 16px;font-size:12px;color:var(--muted);letter-spacing:.5px}
+
+  .hero{text-align:center;padding:72px 24px 48px;position:relative;overflow:hidden}
+  .hero::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(224,123,57,.11) 0%,transparent 70%);pointer-events:none}
+  .hero-tag{display:inline-block;background:rgba(224,123,57,.11);border:1px solid rgba(224,123,57,.3);color:var(--accent);font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;padding:6px 16px;border-radius:50px;margin-bottom:24px}
+  .hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2rem,5vw,3.4rem);line-height:1.1;letter-spacing:-1px;margin-bottom:16px}
+  .hero h1 em{font-style:normal;color:var(--accent)}
+  .hero p{color:var(--muted);max-width:480px;margin:0 auto;line-height:1.7;font-size:15px}
+
+  .form-wrapper{max-width:780px;margin:0 auto;padding:0 20px}
+
+  .section-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;margin-bottom:20px;position:relative;overflow:hidden}
+  .section-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent);opacity:0;transition:opacity .3s}
+  .section-card:focus-within::before{opacity:1}
+
+  .section-title{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:24px;display:flex;align-items:center;gap:10px}
+  .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .col-span-2{grid-column:span 2}
+  @media(max-width:600px){
+    .grid-2{grid-template-columns:1fr}
+    .col-span-2{grid-column:span 1}
+    nav{padding:16px 20px}
+    .section-card{padding:24px 18px}
+  }
+
+  .field{display:flex;flex-direction:column;gap:8px}
+  label{font-size:12px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+  label .req{color:var(--accent);margin-left:2px}
+  .opt-badge{font-size:10px;letter-spacing:.5px;color:var(--muted);opacity:.55;font-weight:400;text-transform:uppercase;margin-left:4px}
+
+  input[type="text"],input[type="tel"],input[type="email"],input[type="number"],select,textarea{
+    background:var(--input-bg);border:1px solid var(--border);border-radius:var(--radius);
+    color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:13px 16px;
+    width:100%;outline:none;transition:border-color .2s,box-shadow .2s;appearance:none;-webkit-appearance:none
+  }
+  select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a7a7a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;cursor:pointer}
+  input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(224,123,57,.13)}
+  input::placeholder,textarea::placeholder{color:#3a3a3a}
+  textarea{resize:vertical;min-height:100px;line-height:1.6}
+
+  .option-grid{display:flex;flex-wrap:wrap;gap:8px}
+  .option-grid input{display:none}
+  .option-grid label{background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:9px 16px;cursor:pointer;font-size:13px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--muted);transition:all .18s;user-select:none}
+  .option-grid input:checked+label{background:rgba(224,123,57,.13);border-color:var(--accent);color:var(--accent);font-weight:500}
+  .option-grid label:hover{border-color:#444;color:var(--text)}
+
+  .req-toggle{display:flex;background:var(--input-bg);border:1px solid var(--border);border-radius:var(--radius);padding:4px;width:fit-content;gap:4px}
+  .req-toggle input{display:none}
+  .req-toggle label{padding:9px 28px;border-radius:7px;cursor:pointer;font-size:14px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--muted);transition:all .2s}
+  .req-toggle input:checked+label{background:var(--accent);color:#0d0d0d;font-weight:600}
+
+  /* Bachelor sub */
+  .bachelor-sub{display:none;margin-top:10px;padding:12px 14px;background:rgba(224,123,57,.06);border:1px solid rgba(224,123,57,.2);border-radius:8px}
+  .bachelor-sub.visible{display:block}
+  .bachelor-sub .sub-label{font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;font-weight:600}
+
+  .amenities-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+  .amenity-item input{display:none}
+  .amenity-item label{display:flex;align-items:center;gap:8px;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;font-size:13px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--muted);transition:all .18s}
+  .amenity-item label::before{content:'';width:15px;height:15px;border:1.5px solid var(--border);border-radius:4px;flex-shrink:0;transition:all .18s}
+  .amenity-item input:checked+label{background:rgba(224,123,57,.1);border-color:var(--accent);color:var(--accent)}
+  .amenity-item input:checked+label::before{background:var(--accent);border-color:var(--accent);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='7' viewBox='0 0 9 7'%3E%3Cpath d='M1 3l2.5 2.5L8 1' stroke='%230d0d0d' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center}
+
+  /* Multi-select dropdown */
+  .multiselect-wrap{position:relative}
+  .multiselect-trigger{background:var(--input-bg);border:1px solid var(--border);border-radius:var(--radius);padding:10px 40px 10px 12px;cursor:pointer;min-height:48px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;transition:border-color .2s,box-shadow .2s;position:relative}
+  .multiselect-trigger.open{border-color:var(--accent);box-shadow:0 0 0 3px rgba(224,123,57,.13)}
+  .multiselect-trigger .placeholder{color:#3a3a3a;font-size:14px;padding:3px 4px}
+  .multiselect-trigger .arrow{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:11px;transition:transform .2s;pointer-events:none}
+  .multiselect-trigger.open .arrow{transform:translateY(-50%) rotate(180deg)}
+
+  .area-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(224,123,57,.15);border:1px solid rgba(224,123,57,.35);color:var(--accent);font-size:12px;font-weight:500;padding:3px 8px 3px 10px;border-radius:6px;white-space:nowrap}
+  .area-tag button{background:none;border:none;color:var(--accent);cursor:pointer;font-size:15px;line-height:1;padding:0;margin:0;opacity:.7;display:flex;align-items:center}
+  .area-tag button:hover{opacity:1}
+
+  .multiselect-dropdown{display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:50;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);max-height:280px;overflow:hidden;flex-direction:column;box-shadow:0 16px 48px rgba(0,0,0,.55)}
+  .multiselect-dropdown.open{display:flex}
+
+  .multiselect-search{padding:10px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+  .multiselect-search input{background:var(--input-bg);border:1px solid var(--border);border-radius:7px;padding:8px 12px;font-size:13px;color:var(--text);width:100%}
+  .multiselect-search input:focus{border-color:var(--accent);box-shadow:none}
+
+  .multiselect-list{overflow-y:auto;flex:1;padding:6px}
+  .multiselect-list::-webkit-scrollbar{width:4px}
+  .multiselect-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+  .multiselect-option{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:7px;cursor:pointer;font-size:13px;color:var(--muted);transition:background .15s,color .15s;user-select:none}
+  .multiselect-option:hover{background:var(--input-bg);color:var(--text)}
+  .multiselect-option.selected{color:var(--accent)}
+  .multiselect-option .chk{width:15px;height:15px;border:1.5px solid var(--border);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+  .multiselect-option.selected .chk{background:var(--accent);border-color:var(--accent)}
+  .multiselect-option.selected .chk::after{content:'✓';font-size:10px;color:#0d0d0d;font-weight:700;line-height:1}
+  .multiselect-option.hidden{display:none}
+
+  .consent-row{display:flex;align-items:flex-start;gap:14px;background:rgba(224,123,57,.06);border:1px solid rgba(224,123,57,.2);border-radius:var(--radius);padding:18px}
+  .consent-row input[type="checkbox"]{width:18px;height:18px;accent-color:var(--accent);margin-top:2px;flex-shrink:0;cursor:pointer}
+  .consent-row p{font-size:13px;color:var(--muted);line-height:1.6}
+  .consent-row strong{color:var(--text)}
+
+  .submit-btn{width:100%;padding:18px;background:var(--accent);color:#0d0d0d;border:none;border-radius:var(--radius);font-family:'Syne',sans-serif;font-weight:700;font-size:16px;letter-spacing:.5px;cursor:pointer;transition:all .2s;margin-top:8px}
+  .submit-btn:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 8px 30px rgba(224,123,57,.3)}
+  .submit-btn:active{transform:translateY(0)}
+
+  .success-overlay{display:none;position:fixed;inset:0;background:rgba(13,13,13,.96);z-index:999;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px}
+  .success-overlay.show{display:flex}
+  .success-icon{width:80px;height:80px;background:rgba(224,123,57,.15);border:2px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:24px;animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .success-overlay h2{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;margin-bottom:12px}
+  .success-overlay p{color:var(--muted);max-width:360px;line-height:1.7}
+  .success-overlay .back-btn{margin-top:32px;padding:12px 32px;background:transparent;border:1px solid var(--accent);color:var(--accent);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s}
+  .success-overlay .back-btn:hover{background:var(--accent);color:#0d0d0d}
+
+  .progress-bar{height:2px;background:var(--border);position:sticky;top:61px;z-index:99}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0%;transition:width .3s ease}
+  .btn-icon{display:inline-flex;align-items:center;gap:8px}
+  .amenity-icon{width:14px;height:14px;flex-shrink:0;opacity:.65}
+  .amenity-item input:checked+label .amenity-icon{opacity:1}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Pro<span>Mate</span></div>
+  <span class="nav-badge"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Tenant Requirement Form</span>
+</nav>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="hero">
+  <div class="hero-tag">Find Your Perfect Home</div>
+  <h1>Tell Us What You're<br>Looking <em>For.</em></h1>
+  <p>Fill in your requirements and our team will match you with the best available properties in Ahmedabad.</p>
+</div>
+
+<div class="form-wrapper">
+<form id="tenantForm" action="https://formspree.io/f/xkoyyrkr" method="POST" onsubmit="handleSubmit(event)">
+
+  <!-- PERSONAL DETAILS -->
+  <div class="section-card">
+    <div class="section-title">Personal Details</div>
+    <div class="grid-2">
+      <div class="field">
+        <label>Full Name <span class="req">*</span></label>
+        <input type="text" name="fullName" placeholder="Enter your full name" required/>
+      </div>
+      <div class="field">
+        <label>Contact Number <span class="req">*</span></label>
+        <input type="tel" name="contact" placeholder="+91 99999 00000" required/>
+      </div>
+      <div class="field">
+        <label>WhatsApp Number <span class="req">*</span></label>
+        <input type="tel" name="whatsapp" placeholder="+91 99999 00000" required/>
+      </div>
+      <div class="field">
+        <label>Email ID <span class="req">*</span></label>
+        <input type="email" name="email" placeholder="you@email.com" required/>
+      </div>
+    </div>
+  </div>
+
+  <!-- REQUIREMENT TYPE -->
+  <div class="section-card">
+    <div class="section-title">Requirement Type</div>
+    <div class="req-toggle">
+      <input type="radio" name="reqType" id="rt-res" value="Residential" checked/>
+      <label for="rt-res"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:5px"><rect x="3" y="7" width="7" height="14"/><rect x="14" y="3" width="7" height="18"/><line x1="10" y1="12" x2="14" y2="12"/></svg>Residential</label>
+      <input type="radio" name="reqType" id="rt-com" value="Commercial"/>
+      <label for="rt-com"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:5px"><rect x="2" y="3" width="20" height="18" rx="1"/><line x1="12" y1="3" x2="12" y2="21"/><path d="M6 7h2M6 11h2M6 15h2M16 7h2M16 11h2M16 15h2"/></svg>Commercial</label>
+    </div>
+  </div>
+
+  <!-- PROPERTY TYPE -->
+  <div class="section-card">
+    <div class="section-title">Property Type</div>
+    <div class="option-grid">
+      <input type="radio" name="propType" id="pt-1bhk" value="1BHK"/><label for="pt-1bhk">1 BHK</label>
+      <input type="radio" name="propType" id="pt-2bhk" value="2BHK"/><label for="pt-2bhk">2 BHK</label>
+      <input type="radio" name="propType" id="pt-3bhk" value="3BHK"/><label for="pt-3bhk">3 BHK</label>
+      <input type="radio" name="propType" id="pt-4bhk" value="4BHK"/><label for="pt-4bhk">4 BHK</label>
+      <input type="radio" name="propType" id="pt-pent" value="Penthouse"/><label for="pt-pent">Penthouse</label>
+      <input type="radio" name="propType" id="pt-villa" value="Villa"/><label for="pt-villa">Villa</label>
+      <input type="radio" name="propType" id="pt-office" value="Office"/><label for="pt-office">Office</label>
+      <input type="radio" name="propType" id="pt-shop" value="Shop"/><label for="pt-shop">Shop</label>
+      <input type="radio" name="propType" id="pt-show" value="Showroom"/><label for="pt-show">Showroom</label>
+    </div>
+  </div>
+
+  <!-- LOCATION & BUDGET -->
+  <div class="section-card">
+    <div class="section-title">Location & Budget</div>
+    <div class="grid-2">
+      <div class="field col-span-2">
+        <label>Preferred Areas <span class="req">*</span></label>
+        <div class="multiselect-wrap" id="areaWrap">
+          <div class="multiselect-trigger" id="areaTrigger" onclick="toggleAreaDropdown()">
+            <span class="placeholder" id="areaPlaceholder">Select one or more areas…</span>
+            <span class="arrow">▼</span>
+          </div>
+          <div class="multiselect-dropdown" id="areaDropdown">
+            <div class="multiselect-search">
+              <input type="text" id="areaSearch" placeholder="Search area…" oninput="filterAreas(this.value)" autocomplete="off"/>
+            </div>
+            <div class="multiselect-list" id="areaList"></div>
+          </div>
+        </div>
+        <input type="hidden" name="areas" id="areasHidden"/>
+      </div>
+      <div class="field col-span-2">
+        <label>Budget Range <span class="req">*</span></label>
+        <div class="option-grid">
+          <input type="radio" name="budget" id="b1" value="10000-20000"/><label for="b1">₹10,000 – ₹20,000</label>
+          <input type="radio" name="budget" id="b2" value="20000-30000"/><label for="b2">₹20,000 – ₹30,000</label>
+          <input type="radio" name="budget" id="b3" value="30000-50000"/><label for="b3">₹30,000 – ₹50,000</label>
+          <input type="radio" name="budget" id="b4" value="50000+"/><label for="b4">₹50,000+</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROPERTY PREFERENCES -->
+  <div class="section-card">
+    <div class="section-title">Property Preferences</div>
+    <div class="grid-2">
+      <div class="field">
+        <label>Furnishing <span class="req">*</span></label>
+        <div class="option-grid">
+          <input type="radio" name="furnishing" id="f-un" value="Unfurnished"/><label for="f-un">Unfurnished</label>
+          <input type="radio" name="furnishing" id="f-semi" value="Semi Furnished"/><label for="f-semi">Semi</label>
+          <input type="radio" name="furnishing" id="f-full" value="Fully Furnished"/><label for="f-full">Fully</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Move-in <span class="req">*</span></label>
+        <div class="option-grid">
+          <input type="radio" name="movein" id="m1" value="Immediate"/><label for="m1">Immediate</label>
+          <input type="radio" name="movein" id="m2" value="Within 15 Days"/><label for="m2">15 Days</label>
+          <input type="radio" name="movein" id="m3" value="Within 1 Month"/><label for="m3">1 Month</label>
+          <input type="radio" name="movein" id="m4" value="Flexible"/><label for="m4">Flexible</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Preferred Floor</label>
+        <div class="option-grid">
+          <input type="radio" name="floor" id="fl1" value="Lower"/><label for="fl1">Lower</label>
+          <input type="radio" name="floor" id="fl2" value="Middle"/><label for="fl2">Middle</label>
+          <input type="radio" name="floor" id="fl3" value="Higher"/><label for="fl3">Higher</label>
+          <input type="radio" name="floor" id="fl4" value="Any"/><label for="fl4">Any</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Preferred Facing</label>
+        <div class="option-grid">
+          <input type="radio" name="facing" id="fc1" value="East"/><label for="fc1">East</label>
+          <input type="radio" name="facing" id="fc2" value="West"/><label for="fc2">West</label>
+          <input type="radio" name="facing" id="fc3" value="North"/><label for="fc3">North</label>
+          <input type="radio" name="facing" id="fc4" value="South"/><label for="fc4">South</label>
+          <input type="radio" name="facing" id="fc5" value="Any"/><label for="fc5">Any</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TENANT INFO -->
+  <div class="section-card">
+    <div class="section-title">Tenant Information</div>
+    <div class="grid-2">
+      <div class="field">
+        <label>Tenant Type <span class="req">*</span></label>
+        <div class="option-grid">
+          <input type="radio" name="tenantType" id="tt1" value="Family"       onchange="hideBachelorSub()"/><label for="tt1">Family</label>
+          <input type="radio" name="tenantType" id="tt2" value="Bachelor"     onchange="showBachelorSub()"/><label for="tt2">Bachelor</label>
+          <input type="radio" name="tenantType" id="tt3" value="Company Lease" onchange="hideBachelorSub()"/><label for="tt3">Company</label>
+          <input type="radio" name="tenantType" id="tt4" value="Students"     onchange="hideBachelorSub()"/><label for="tt4">Students</label>
+        </div>
+        <div class="bachelor-sub" id="bachelorSub">
+          <div class="sub-label">Bachelor Type</div>
+          <div class="option-grid">
+            <input type="radio" name="bachelorType" id="bt-girl" value="Girl"/><label for="bt-girl"><svg style="display:inline;vertical-align:middle;margin-right:5px" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M12 12v8M9 18h6"/></svg>Girl</label>
+            <input type="radio" name="bachelorType" id="bt-boy"  value="Boy"/><label for="bt-boy"><svg style="display:inline;vertical-align:middle;margin-right:5px" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="4"/><line x1="22" y1="2" x2="15" y2="9"/><polyline points="18 2 22 2 22 6"/></svg>Boy</label>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Number of Occupants</label>
+        <input type="number" name="occupants" placeholder="e.g. 4" min="1"/>
+      </div>
+      <div class="field">
+        <label>Parking Required?</label>
+        <div class="option-grid">
+          <input type="radio" name="parking" id="pk-yes" value="Yes"/><label for="pk-yes">Yes</label>
+          <input type="radio" name="parking" id="pk-no"  value="No"/><label for="pk-no">No</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Vehicle Type</label>
+        <div class="option-grid">
+          <input type="radio" name="vehicle" id="v1" value="2 Wheeler"/><label for="v1">2 Wheeler</label>
+          <input type="radio" name="vehicle" id="v2" value="4 Wheeler"/><label for="v2">4 Wheeler</label>
+          <input type="radio" name="vehicle" id="v3" value="Both"/><label for="v3">Both</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Pet Friendly?</label>
+        <div class="option-grid">
+          <input type="radio" name="pets" id="pet-yes" value="Yes"/><label for="pet-yes">Yes</label>
+          <input type="radio" name="pets" id="pet-no"  value="No"/><label for="pet-no">No</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Gated Society?</label>
+        <div class="option-grid">
+          <input type="radio" name="gated" id="gs-yes" value="Yes"/><label for="gs-yes">Yes</label>
+          <input type="radio" name="gated" id="gs-no"  value="No"/><label for="gs-no">No</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AMENITIES -->
+  <div class="section-card">
+    <div class="section-title">Amenities Required</div>
+    <div class="amenities-grid">
+      <div class="amenity-item"><input type="checkbox" id="am-lift"   name="amenities" value="Lift"/><label for="am-lift"><svg class="amenity-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M10 7l-2 3h8l-2-3"/><path d="M10 17l-2-3h8l-2 3"/></svg>Lift</label></div>
+      <div class="amenity-item"><input type="checkbox" id="am-ac"     name="amenities" value="AC"/><label for="am-ac"><svg class="amenity-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/></svg>AC</label></div>
+      <div class="amenity-item"><input type="checkbox" id="am-bed"    name="amenities" value="Bed"/><label for="am-bed"><svg class="amenity-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16M2 8h20v12H2M10 8V4"/><rect x="10" y="4" width="12" height="4" rx="1"/></svg>Bed</label></div>
+      <div class="amenity-item"><input type="checkbox" id="am-sofa"   name="amenities" value="Sofa"/><label for="am-sofa"><svg class="amenity-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"/><path d="M2 16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v2H6v-2a2 2 0 0 0-4 0z"/><line x1="6" y1="18" x2="6" y2="21"/><line x1="18" y1="18" x2="18" y2="21"/></svg>Sofa</label></div>
+      <div class="amenity-item"><input type="checkbox" id="am-fridge" name="amenities" value="Refrigerator"/><label for="am-fridge"><svg class="amenity-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="5" y1="10" x2="19" y2="10"/><line x1="9" y1="6" x2="9" y2="8"/><line x1="9" y1="14" x2="9" y2="18"/></svg>Refrigerator</label></div>
+      <div class="amenity-item"><input type="checkbox" id="am-wm"     name="amenities" value="Washing Machine"/><label for="am-wm"><svg class="amenity-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2"/><circle cx="12" cy="13" r="4"/><line x1="7" y1="6" x2="7.01" y2="6"/><line x1="11" y1="6" x2="13" y2="6"/></svg>Washing Machine</label></div>
+      <div class="amenity-item"><input type="checkbox" id="am-ro"     name="amenities" value="RO"/><label for="am-ro"><svg class="amenity-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>RO</label></div>
+      <div class="amenity-item"><input type="checkbox" id="am-pb"     name="amenities" value="Power Backup"/><label for="am-pb"><svg class="amenity-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="16" height="10" rx="2"/><line x1="22" y1="11" x2="22" y2="13"/><polyline points="11 10 9 14 13 14 11 18"/></svg>Power Backup</label></div>
+      <div class="amenity-item"><input type="checkbox" id="am-sec"    name="amenities" value="Security"/><label for="am-sec"><svg class="amenity-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Security</label></div>
+      <div class="amenity-item"><input type="checkbox" id="am-gym"    name="amenities" value="Gym"/><label for="am-gym"><svg class="amenity-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v16M18 4v16M3 8h3M18 8h3M3 16h3M18 16h3M6 12h12"/></svg>Gym</label></div>
+      <div class="amenity-item"><input type="checkbox" id="am-club"   name="amenities" value="Club House"/><label for="am-club"><svg class="amenity-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18c1.4-1.4 3-2 5-2s3.6.6 5 2 3 2 5 2"/><circle cx="12" cy="7" r="3"/><path d="M6 13c.5-1.5 2-2.5 3-3"/></svg>Club House</label></div>
+    </div>
+  </div>
+
+  <!-- LOCATION DETAILS -->
+  <div class="section-card">
+    <div class="section-title">Location Details</div>
+    <div class="grid-2">
+      <div class="field">
+        <label>Office / Work Location <span class="opt-badge">optional</span></label>
+        <input type="text" name="workLocation" placeholder="Your workplace area"/>
+      </div>
+      <div class="field">
+        <label>Preferred Nearby Landmark <span class="opt-badge">optional</span></label>
+        <input type="text" name="landmark" placeholder="e.g. Near XYZ School"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERIFICATION — all optional -->
+  <div class="section-card">
+    <div class="section-title">Verification Details</div>
+    <div class="grid-2">
+      <div class="field">
+        <label>Occupation / Company Name <span class="opt-badge">optional</span></label>
+        <input type="text" name="occupation" placeholder="e.g. Software Engineer at TCS"/>
+      </div>
+      <div class="field">
+        <label>Monthly Income Range <span class="opt-badge">optional</span></label>
+        <select name="income">
+          <option value="" disabled selected>Select range</option>
+          <option>Below ₹30,000</option>
+          <option>₹30,000 – ₹50,000</option>
+          <option>₹50,000 – ₹1,00,000</option>
+          <option>₹1,00,000+</option>
+        </select>
+      </div>
+      <div class="field col-span-2">
+        <label>ID Proof Available <span class="opt-badge">optional</span></label>
+        <div class="option-grid">
+          <input type="radio" name="idProof" id="id-aadhar"   value="Aadhaar"/><label for="id-aadhar">Aadhaar</label>
+          <input type="radio" name="idProof" id="id-pan"      value="PAN"/><label for="id-pan">PAN Card</label>
+          <input type="radio" name="idProof" id="id-passport" value="Passport"/><label for="id-passport">Passport</label>
+          <input type="radio" name="idProof" id="id-dl"       value="Driving License"/><label for="id-dl">Driving License</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCHEDULING -->
+  <div class="section-card">
+    <div class="section-title">Scheduling</div>
+    <div class="grid-2">
+      <div class="field">
+        <label>When do you want options? <span class="req">*</span></label>
+        <div class="option-grid">
+          <input type="radio" name="whenOptions" id="wo1" value="Immediate"/><label for="wo1">Immediate</label>
+          <input type="radio" name="whenOptions" id="wo2" value="Today"/><label for="wo2">Today</label>
+          <input type="radio" name="whenOptions" id="wo3" value="This Week"/><label for="wo3">This Week</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Site Visit Availability <span class="req">*</span></label>
+        <div class="option-grid">
+          <input type="radio" name="visitAvail" id="sv1" value="Weekdays"/><label for="sv1">Weekdays</label>
+          <input type="radio" name="visitAvail" id="sv2" value="Weekends"/><label for="sv2">Weekends</label>
+          <input type="radio" name="visitAvail" id="sv3" value="Anytime"/><label for="sv3">Anytime</label>
+        </div>
+      </div>
+      <div class="field col-span-2">
+        <label>Additional Requirements / Notes <span class="opt-badge">optional</span></label>
+        <textarea name="notes" placeholder="Any specific requirements, preferences, or questions for our team…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONSENT -->
+  <div class="section-card">
+    <div class="section-title">Final Consent</div>
+    <div class="consent-row">
+      <input type="checkbox" id="consent" name="consent" required/>
+      <p>I agree to be contacted by <strong>ProMate</strong> regarding suitable property options. I confirm that the information provided is accurate and I consent to the ProMate team reaching out via call, WhatsApp, or email.</p>
+    </div>
+  </div>
+
+  <button type="submit" class="submit-btn">Submit Requirement →</button>
+</form>
+</div>
+
+<!-- SUCCESS -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-icon"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+  <h2>Requirement Submitted!</h2>
+  <p>Thank you! Our team will review your requirements and get back to you with the best matching properties shortly.</p>
+  <button class="back-btn" onclick="resetForm()">Submit Another Inquiry</button>
+</div>
+
+<script>
+// ── AREAS ────────────────────────────────────────────────
+const ALL_AREAS = ["100 Feet Road","Adalaj","Ambawadi","Ambli","Ashram Road","Bavla","Bhadaj","Bhat","Bhuyangdev","Bodakdev","Bopal","CG Road","Chanakyapuri","Chandkheda","Chandlodia","Changodar","Dholera","Drive In Road","Ellisbridge","Gandhinagar","Ghatlodiya","Ghuma","Gift City","Gota","Gulbai Tekra","Gurukul","Hebatpur Road","Income Tax","Iscon Ambli Road","Jagatpur","Jivrajpark","Jodhpur","Vijay Cross Road","Juhapura","Kalol","Koba","Koteshwar","Kudasan","Law Garden","Makarba","Manekbaug","Manipur","Memnagar","Mithakhali","Motera","Nana Chiloda","Naranpura","Navrangpura","Nehru Nagar","Wadaj","New CG Road","New Ranip","New Wadaj","Nirnay Nagar","Ognaj","Other Area","Paldi","Palodia","Pethapur","Prahladnagar","Ramdevnagar","Rancharda","Randesan","Randheja","Ranip","Raysan","Zundal","Sabarmati","Sanand","Sanathal","Santej","Sargasan","Sarkhej","Satadhar","Satellite","Science City","SG Road","Shahibaug","Shastrinar","Shela","Shilaj","Shivranjani","Shyamal","Sindhubhavan Road","Sola","South Bopal","SP Ring Road","Subhash Bridge","Sughadh","Surdhara Circle","Thaltej","Thol","Tragad","Usmanpura","Vaishno Devi","Vasna","Vastrapur","Vavol","Vejalpur"].sort();
+
+let selectedAreas = [];
+
+function buildAreaList() {
+  const list = document.getElementById('areaList');
+  ALL_AREAS.forEach(area => {
+    const div = document.createElement('div');
+    div.className = 'multiselect-option';
+    div.dataset.value = area;
+    div.innerHTML = `<span class="chk"></span><span>${area}</span>`;
+    div.addEventListener('click', () => toggleArea(area, div));
+    list.appendChild(div);
+  });
+}
+
+function toggleArea(area, el) {
+  const idx = selectedAreas.indexOf(area);
+  if (idx === -1) { selectedAreas.push(area); el.classList.add('selected'); }
+  else { selectedAreas.splice(idx, 1); el.classList.remove('selected'); }
+  renderTags(); updateHidden();
+}
+
+function removeArea(area) {
+  selectedAreas = selectedAreas.filter(a => a !== area);
+  document.querySelectorAll('.multiselect-option').forEach(el => { if (el.dataset.value === area) el.classList.remove('selected'); });
+  renderTags(); updateHidden();
+}
+
+function renderTags() {
+  const trigger = document.getElementById('areaTrigger');
+  const ph = document.getElementById('areaPlaceholder');
+  trigger.querySelectorAll('.area-tag').forEach(t => t.remove());
+  if (selectedAreas.length === 0) { ph.style.display = ''; }
+  else {
+    ph.style.display = 'none';
+    const arrow = trigger.querySelector('.arrow');
+    selectedAreas.forEach(area => {
+      const tag = document.createElement('span');
+      tag.className = 'area-tag';
+      const safeArea = area.replace(/'/g, "\\'");
+      tag.innerHTML = `${area} <button type="button" onclick="event.stopPropagation();removeArea('${safeArea}')">×</button>`;
+      trigger.insertBefore(tag, arrow);
+    });
+  }
+  updateProgress();
+}
+
+function updateHidden() { document.getElementById('areasHidden').value = selectedAreas.join(', '); }
+
+function toggleAreaDropdown() {
+  const trigger = document.getElementById('areaTrigger');
+  const dropdown = document.getElementById('areaDropdown');
+  const open = dropdown.classList.toggle('open');
+  trigger.classList.toggle('open', open);
+  if (open) setTimeout(() => document.getElementById('areaSearch').focus(), 50);
+}
+
+function filterAreas(q) {
+  const lower = q.toLowerCase();
+  document.querySelectorAll('.multiselect-option').forEach(el => {
+    el.classList.toggle('hidden', !el.dataset.value.toLowerCase().includes(lower));
+  });
+}
+
+document.addEventListener('click', e => {
+  const wrap = document.getElementById('areaWrap');
+  if (!wrap.contains(e.target)) {
+    document.getElementById('areaDropdown').classList.remove('open');
+    document.getElementById('areaTrigger').classList.remove('open');
+  }
+});
+
+// ── BACHELOR ─────────────────────────────────────────────
+function showBachelorSub() { document.getElementById('bachelorSub').classList.add('visible'); }
+function hideBachelorSub() { document.getElementById('bachelorSub').classList.remove('visible'); }
+
+// ── PROGRESS ─────────────────────────────────────────────
+const form = document.getElementById('tenantForm');
+const fill = document.getElementById('progressFill');
+
+function updateProgress() {
+  const textInputs = form.querySelectorAll('input[required]:not([type="radio"]):not([type="checkbox"]),select[required],textarea[required]');
+  let filled = 0;
+  textInputs.forEach(el => { if (el.value.trim()) filled++; });
+  if (selectedAreas.length > 0) filled++;
+  const radioNames = new Set();
+  form.querySelectorAll('input[type="radio"][required]').forEach(el => radioNames.add(el.name));
+  radioNames.forEach(name => { if (form.querySelector(`input[name="${name}"]:checked`)) filled++; });
+  const total = textInputs.length + 1 + radioNames.size;
+  fill.style.width = Math.min(100, Math.round((filled / total) * 100)) + '%';
+}
+
+form.addEventListener('change', updateProgress);
+form.addEventListener('input', updateProgress);
+
+// ── INIT ─────────────────────────────────────────────────
+buildAreaList();
+updateProgress();
+
+// ── SUBMIT / RESET ────────────────────────────────────────
+async function handleSubmit(e) {
+  e.preventDefault();
+  if (selectedAreas.length === 0) {
+    const trigger = document.getElementById('areaTrigger');
+    trigger.style.borderColor = 'var(--accent)';
+    trigger.scrollIntoView({ behavior:'smooth', block:'center' });
+    setTimeout(() => trigger.style.borderColor = '', 2000);
+    alert('Please select at least one preferred area.');
+    return;
+  }
+
+  const btn = form.querySelector('.submit-btn');
+  btn.textContent = 'Submitting…';
+  btn.disabled = true;
+
+  try {
+    const data = new FormData(form);
+    const response = await fetch('https://formspree.io/f/xkoyyrkr', {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (response.ok) {
+      document.getElementById('successOverlay').classList.add('show');
+      window.scrollTo({ top:0, behavior:'smooth' });
+    } else {
+      const json = await response.json();
+      const msg = (json.errors || []).map(err => err.message).join(', ') || 'Submission failed. Please try again.';
+      alert(msg);
+      btn.textContent = 'Submit Requirement →';
+      btn.disabled = false;
+    }
+  } catch (err) {
+    alert('Network error. Please check your connection and try again.');
+    btn.textContent = 'Submit Requirement →';
+    btn.disabled = false;
+  }
+}
+
+function resetForm() {
+  document.getElementById('successOverlay').classList.remove('show');
+  form.reset();
+  selectedAreas = [];
+  renderTags(); updateHidden();
+  document.querySelectorAll('.multiselect-option').forEach(el => el.classList.remove('selected'));
+  hideBachelorSub();
+  fill.style.width = '0%';
+}
+</script>
+</body>
+</html>
